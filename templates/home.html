@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Price Checker</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            padding: 10px;
+            border: 1px solid white;
+            border-radius: 5px;
+            background-color: transparent;
+            color: white;
+            width: 200px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1E90FF; /* Dodger Blue */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #4169E1; /* Royal Blue */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Crypto Price Checker</h1>
+    <div class="input-group">
+        <input type="text" class="input-field" id="cryptoInput" placeholder="Enter cryptocurrency or currency">
+        <button class="btn" onclick="searchPrice()">Search</button>
+    </div>
+    <button class="btn" onclick="showCurrentPrice()">Show Current Price</button>
+    <div id="priceDisplay"></div>
+</div>
+
+<script>
+    function searchPrice() {
+        var input = document.getElementById("cryptoInput").value;
+        fetch('/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({crypto_name: input})
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update priceDisplay element with the received data
+            document.getElementById("priceDisplay").innerHTML = `${data.crypto_name}: ${data.price}`;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function showCurrentPrice() {
+        // Implement functionality to show current price
+        // Update the priceDisplay element with the current price
+    }
+</script>
+
+</body>
+</html>
