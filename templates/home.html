@@ -56,9 +56,11 @@
         <input type="text" class="input-field" id="cryptoInput" placeholder="Enter cryptocurrency or currency">
         <button class="btn" onclick="searchPrice()">Search</button>
     </div>
-    <button class="btn" onclick="showCurrentPrice()">Show Current Price</button>
+    <button class="btn" onclick="showCurrentKline()">Show Current Kline</button>
     <div id="priceDisplay"></div>
+    <canvas id="KlineChart" width="800" height="600"></canvas>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     function searchPrice() {
@@ -78,7 +80,27 @@
         .catch(error => console.error('Error:', error));
     }
 
-    function showCurrentPrice() {
+    function showCurrentKline() {
+        const ctx = document.getElementById('KlineChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                borderWidth: 1
+            }]
+            },
+            options: {
+            scales: {
+                y: {
+                beginAtZero: true
+                }
+            }
+            }
+        });
         // Implement functionality to show current price
         // Update the priceDisplay element with the current price
     }
