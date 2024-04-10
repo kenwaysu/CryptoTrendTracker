@@ -61,8 +61,10 @@
     <canvas id="KlineChart" width="800" height="600"></canvas>
 </div>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script> -->
 
 <script>
     function searchPrice() {
@@ -83,119 +85,68 @@
     }
 
     function showCurrentKline() {
-      const data = {
-    // labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Weekly Sales',
-            data: [
-                {
-                    x: '2020-06-04 16:12:00',
-                    o: 1.25,
-                    h: 1.35,
-                    l: 1.00,
-                    c: 1.10,
-                    s: [1.25, 1.10]
-                },
-                {
-                    x: '2020-06-04 17:12:00',
-                    o: 1.10,
-                    h: 1.95,
-                    l: 1.00,
-                    c: 1.50,
-                    s: [1.10, 1.50]
-                },
-                {
-                    x: new Date('2024-03-13').setHours(0, 0, 0, 0),
-                    o: 1.50,
-                    h: 2.00,
-                    l: 1.35,
-                    c: 1.80,
-                    s: [1.50, 1.80]
-                },
-                {
-                    x: new Date('2024-03-14').setHours(0, 0, 0, 0),
-                    o: 1.80,
-                    h: 1.80,
-                    l: 0.80,
-                    c: 0.90,
-                    s: [1.80, 0.90]
-                },
-                {
-                    x: new Date('2024-03-15').setHours(0, 0, 0, 0),
-                    o: 0.90,
-                    h: 1.35,
-                    l: 0.75,
-                    c: 1.10,
-                    s: [0.90, 1.10]
-                },
-            ],
-            backgroundColor:(ctx)=>{
-                const { raw: { o, c }} = ctx;
-                console.log(ctx.raw.o)
-                console.log(ctx.raw.c)
-                let color;
-                if( c>=o ){
-                    color = 'rgba(75, 192, 192, 1)'
-                }else{
-                    color = 'rgba(255, 26, 104, 1)'
-                }
-                return color;
+        const input = document.getElementById("cryptoInput").value;
+        fetch('/showCurrentKline', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-        }]
-    };
+            body: JSON.stringify({crypto_name: input})
+        })
+        .then(response => response.json())
+        .then(kline_data => {
+            console.log(kline_data)
+            const data = {
+            datasets: [{
+                label: 'kline',
+                data: kline_data,
+                backgroundColor:(ctx)=>{
+                        const { raw: { o, c }} = ctx;
+                        console.log(ctx.raw.o)
+                        console.log(ctx.raw.c)
+                        let color;
+                        if( c>=o ){
+                            color = 'rgba(0, 255, 0, 1)'
+                        }else{
+                            color = 'rgba(255, 0, 0, 1)'
+                        }
+                        return color;
+                    },
+            }]
+            };
 
-    // config 
-      const config = {
-        type: 'bar',
-        data,
-        options: {
-            parsing: {
-                xAxisKey: 'x',
-                yAxisKey: 's',
-            },
-            scales: {
-                x: {
-                    type: 'timeseries',
-                    time:{
-                    unit: 'day',
+            
+            const config = {
+                type: 'bar',
+                data,
+                options: {
+                    parsing: {
+                        xAxisKey: 'x',
+                        yAxisKey: 's',
+                    },
+                    scales: {
+                        x: {
+                            type: 'timeseries',
+                            time:{
+                            unit: 'day',
+                            }
+                        },
+                        y: {
+                        beginAtZero: false
+                        }
                     }
-                },
-                y: {
-                beginAtZero: true
                 }
-            }
-        }
-        };
+                };
+            
+            const KlineChart = new Chart(
+            document.getElementById('KlineChart'),
+            config
+            );
+            
+        })
+        .catch(error => console.error('Error:', error));
 
-        // render init block
-        const myChart = new Chart(
-        document.getElementById('KlineChart'),
-        config
-        ); 
-
-
-        // const ctx = document.getElementById('KlineChart');
-
-        // new Chart(ctx, {
-        //     type: 'bar',
-        //     data: {
-        //     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        //     datasets: [{
-        //         label: '# of Votes',
-        //         data: [12, 19, 3, 5, 2, 3],
-        //         borderWidth: 1
-        //     }]
-        //     },
-        //     options: {
-        //     scales: {
-        //         y: {
-        //         beginAtZero: true
-        //         }
-        //     }
-        //     }
-        // });
-        // Implement functionality to show current price
-        // Update the priceDisplay element with the current price
+    
     }
 </script>
 

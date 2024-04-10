@@ -1,6 +1,7 @@
 from flask import Flask,request,jsonify,render_template
 import websocket
 import requests
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -34,6 +35,30 @@ def search():
     
     # 錯誤訊息
     return jsonify({'error': 'Unable to fetch price data for the specified cryptocurrency'})
+
+@app.route('/showCurrentKline', methods=['POST'])
+def showCurrentKline():
+    data = request.get_json()
+    crypto_name = data.get('crypto_name')
+    tick_interval = '1h'
+
+    url = f'https://api.binance.com/api/v3/klines?symbol={crypto_name.upper()}USDT&interval='+tick_interval
+    data = requests.get(url).json()
+    kline_data=[]
+    for item in data:
+        kline_item = {
+            'x': datetime.fromtimestamp(item[0] / 1000).strftime("%Y-%m-%d %H:%M:%S"),
+            'o': float(item[1]),  
+            'h': float(item[2]),  
+            'l': float(item[3]),  
+            'c': float(item[4]),
+            's': [float(item[1]), float(item[4])]
+        }
+        kline_data.append(kline_item)
+    
+    print(kline_data)
+
+    return jsonify(kline_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
